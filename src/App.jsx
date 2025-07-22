@@ -1,82 +1,79 @@
-import React, { useState} from 'react';
-import QueryView from './components/views/queryview';
-import CollectionView from './components/views/collectionview';
-import "font-awesome/css/font-awesome.min.css";
-import "./css/styles.css";
-import GMAFAdapter from './js/GMAFAdapter';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { Component } from 'react';
 
+import ConnectStatusView from './views/Connect/ConnectStatusView.jsx';
+import SearchQueryView from './views/Search/SearchQueryView.jsx';
+import BrowseView from './views/Browse/BrowseView.jsx';
+import PresentationView from './views/Presentation/PresentationView.jsx';
 
-function App() {
+import './styles/layout.css';
 
-  const [view, setView] = useState("Query"); 
-  const [presentationView, setPresentationView] = useState("Browse View"); 
-  const [status, setStatus] = useState(-1); 
-  const [statuslength, setStatusLength] = useState(0);
-
-
-  function changePresentationView(view){
-    setPresentationView(view);
-  }
-  function changeView(view){
-    setView(view);
-  }
-
-  function updateStatus(status, length){
-   
-    setStatus(status);
-    setStatusLength(length);
-  }
-
-  async function processAllAssets(){
-
-    var gmaf= await GMAFAdapter.getInstance();
-   
-    if(gmaf===false){
-      return;
-    }
-
-    gmaf.processAllAssets(updateStatus);
-  
+/**
+ * Root component of the application.
+ * Composes the main layout including connection status, search, browsing, and presentation.
+ * Manages shared state for search results and selected item.
+ */
+class App extends Component {
+  /**
+   * Initializes component state.
+   * - `searchResults`: stores the results returned from the search
+   * - `selectedItem`: stores the currently selected item from the results
+   * 
+   * @param {object} props - React props
+   */
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchResults: [],
+      selectedItem: null
+    };
   }
 
-  return (
-    <div className='app-container m-2'>
-      {status >= 0 && statuslength!==status ?
-        <div className="progress">
-        <div className="progress-bar" role="progressbar"   style={{ width: `${statuslength > 0 ? (status / statuslength) * 100 : 0}%` }} aria-valuenow={status} aria-valuemin="0" aria-valuemax={statuslength}></div>
-      </div>:""
-      }
-{/*       <div className='d-flex'>
-        <div className="dropdown m-1">
-            <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {view}
-            </button>
-            <ul className="dropdown-menu">
-                <li><button onClick={()=>changeView("Query")} className="dropdown-item" >Query</button></li>
-                <li><button onClick={()=>changeView("Collection")} className="dropdown-item" >Collection</button></li>
-            </ul>
+  /**
+   * Callback to update the search results passed from the SearchQueryView.
+   * Also resets any previously selected item.
+   * 
+   * @param {object[]} results - Array of search result items
+   */
+  handleSearchResults = (results) => {
+    this.setState({ searchResults: results, selectedItem: null });
+  };
+
+  /**
+   * Callback to update the currently selected item.
+   * 
+   * @param {object} item - The selected item from the result list
+   */
+  handleItemSelected = (item) => {
+    this.setState({ selectedItem: item });
+  };
+
+  /**
+   * Renders the main application layout with three vertical columns:
+   * - Left: connection + search input
+   * - Middle: result browsing
+   * - Right: item presentation
+   * 
+   * @returns {JSX.Element}
+   */
+  render() {
+    return (
+      <div className="app-container">
+        <div className="column left">
+          <div className="connectContainer">
+            <ConnectStatusView />
+          </div>
+          <div className="searchContainer">
+            <SearchQueryView onSearchResults={this.handleSearchResults} />
+          </div>
         </div>
-
-       { view === "Query" ?
-        <div className="dropdown m-1">
-          <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {presentationView}
-          </button>
-          <ul className="dropdown-menu">
-              <li><button onClick={()=>changePresentationView("Browse View")} className="dropdown-item" >Browse View</button></li>
-              <li><button onClick={()=>changePresentationView("Details View")} className="dropdown-item" >Details View</button></li>
-          </ul>
-        </div>:
-        ""
-        }
-        <button onClick={()=>processAllAssets()} className="btn btn-secondary m-1" type="button" aria-expanded="false">
-          Process all Assets
-        </button>
-      </div> */}
-      { view === "Query" ? <QueryView updateStatus={updateStatus} presentationView={presentationView}/> : <CollectionView updateStatus={updateStatus} /> }
-    </div>
-  );
+        <div className="column middle">
+          <BrowseView results={this.state.searchResults} onItemSelected={this.handleItemSelected} />
+        </div>
+        <div className="column right">
+          <PresentationView item={this.state.selectedItem} />
+        </div>
+      </div>
+    );
+  }
 }
-
 export default App;
