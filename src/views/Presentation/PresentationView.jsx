@@ -20,7 +20,6 @@ class PresentationView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      referenceItems: [],
       mediaItems: [],
       showPlayerModal: false,
       visiblePlayers: {},
@@ -46,9 +45,6 @@ class PresentationView extends Component {
     if (prevProps.item !== this.props.item && this.props.item) {
       TimelineController.reset();
       this.initializePlayersFromItem(this.props.item);
-      this.setState({
-        referenceItems: this.props.item.cmmco?.references || [],
-      });
     }
   }
 
@@ -70,9 +66,8 @@ class PresentationView extends Component {
     }
 
     if (item?.fileUrl && item.mimeType === 'application/zip') {
-      const extracted = await CMMCOunzipService.extractMediaItemsFromZip(
+      const extracted = await CMMCOunzipService.extractMediaItemsFromCMMCO(
         item.fileUrl,
-        item.cmmco?.references || [],
         item.mmcoType
       );
       mediaItems.push(...extracted);
@@ -101,7 +96,7 @@ class PresentationView extends Component {
    */
   renderMetadata() {
     const { generalMetadata = {}, mimeType, mmcoType } = this.props.item || {};
-    const { referenceItems } = this.state;
+    const { mediaItems} = this.state;
 
     return (
       <div>
@@ -113,16 +108,16 @@ class PresentationView extends Component {
           <p><strong>MMCO Type:</strong> {mmcoType}</p>
           <p><strong>Dateipfad:</strong> {generalMetadata.fileReference}</p>
 
-          {referenceItems.length > 0 && (
+          {mimeType === 'application/zip' && (
             <>
               <p><strong>CMMCO:</strong></p>
               <ul>
-                {referenceItems.map((ref, i) => (
-                  <li key={i}>{ref.id} – <em>{ref.mimeType}</em></li>
+                {mediaItems.map((ref, i) => (
+                  <li key={i}>{ref.fileName} – <em>{ref.mimeType}</em></li>
                 ))}
               </ul>
             </>
-          )}
+          )} 
         </div>
       </div>
     );

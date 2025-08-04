@@ -23,7 +23,8 @@ const extensionToMimeMap = {
   csv: 'text/csv',
   json: 'application/json',
   xml: 'application/xml',
-  zip: 'application/zip'
+  zip: 'application/zip',
+  cmmco: 'application/zip'
 };
 
 /**

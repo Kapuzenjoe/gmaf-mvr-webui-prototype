@@ -93,8 +93,6 @@ class MMIRConnector {
       collectionElement.fileUrl = `${this.baseUrl}/gmaf/file/${this.token}/${collectionElement.generalMetadata.id}`;
       collectionElement.mimeType = await this.fetchMimeType(collectionElement.fileUrl) || fallbackMime;
       collectionElement.mmcoType = 'default'; //toDo an Datenstruktur anpassen
-      collectionElement.cmmco = { hasReferences: false, references: [] }; //toDo an Datenstruktur anpassen
-      collectionElement.cmmco.hasReferences = collectionElement.cmmco.references.length > 0; //toDo an Datenstruktur anpassen
     }
 
     return collectionElement;

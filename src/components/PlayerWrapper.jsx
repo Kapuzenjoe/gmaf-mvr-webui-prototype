@@ -38,7 +38,7 @@ const PlayerWrapper = ({ children, isModal = false, fileName, index = 0, boundsR
 
   // Standard content layout with optional title
   const content = (
-    <div className={styles.playerWrapper}>
+    <div className={styles.playerWrapper} data-testid="player-wrapper">
       {fileName && <div className={styles.playerTitle}>{fileName}</div>}
       <div className={styles.playerInner}>{children}</div>
     </div>

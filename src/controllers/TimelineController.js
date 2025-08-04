@@ -21,9 +21,6 @@ class TimelineController {
    * @param {object} player - A player object implementing `play`, `pause`, `sync`, etc.
    */
   registerPlayer(player) {
-    // if (!this.players.includes(player)) {
-    //   this.players.push(player);
-    // }
     const id = player.props?.id || player.props?.fileName || 'unknown';
 
     if (this.players.some(p => (p.props?.id || p.props?.fileName) === id)) {

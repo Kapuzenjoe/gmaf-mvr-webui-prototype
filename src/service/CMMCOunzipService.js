@@ -13,7 +13,7 @@ class CMMCOunzipService {
    * @param {string} mmcoType - optional MMCO type to assign
    * @returns {Promise<Array>} - List of mediaItems
    */
-  static async extractMediaItemsFromZip(zipUrl, references = [], mmcoType = 'default') {
+  static async extractMediaItemsFromCMMCO(zipUrl, mmcoType = 'default') {
     try {
       const response = await fetch(zipUrl);
       const blob = await response.blob();
@@ -27,8 +27,7 @@ class CMMCOunzipService {
         path.includes('/.') ||
         path.endsWith('/');
 
-      //for (const ref of references) { // CMMCO MetaData from MMFG 
-      for (const [path, zipEntry] of Object.entries(zip.files)) { //Fallback without MMFG
+      for (const [path, zipEntry] of Object.entries(zip.files)) { 
         if (zipEntry.dir || isHidden(path)) continue;
 
         const fileBlob = await zipEntry.async('blob');
